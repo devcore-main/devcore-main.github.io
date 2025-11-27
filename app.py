@@ -6,7 +6,7 @@ CORS(app)
 
 @app.route("/")
 def home():
-    return jsonify({"status": "Backend is running"})
+    return jsonify({"status": "test is running"})
 
 if __name__ == "__main__":
     app.run(debug=True)
