@@ -1,13 +1,4 @@
 
-<!-- DevCore - Single-file Landing Page (index.html)
-     Instructions:
-     1) Create a GitHub repo named: devcore.github.io
-     2) Add this file as index.html to the repo (push to main).
-     3) Enable GitHub Pages: Settings -> Pages -> Branch: main -> Save.
-     4) Visit https://devcore.github.io
-     5) To use a custom domain, add a file named CNAME containing yourdomain.com
--->
-
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -69,10 +60,23 @@
     .pill{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,0.25)}
     .search{display:flex;gap:8px;align-items:center}
     input.search-input{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;color:#e6eef6}
+
+    /* admin styles */
+    .admin-panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);margin-top:18px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:pointer}
+    .tab.active{background:linear-gradient(90deg,var(--accent),#7c3aed);color:#042}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:right}
+    .small{font-size:12px;color:var(--muted)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03)}
+    .hidden{display:none}
+    .panel-row{display:flex;justify-content:space-between;gap:8px;align-items:center}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="main-container">
     <header>
       <div class="brand">
         <div class="logo">DC</div>
@@ -86,10 +90,11 @@
         <a href="#projects">المشاريع</a>
         <a href="#about">عن DevCore</a>
         <a href="#contact">تواصل</a>
+        <a href="#admin" onclick="openAdmin(event)">الادمن</a>
       </nav>
     </header>
 
-    <main class="hero">
+    <main class="hero" id="public-area">
       <div class="hero-card">
         <h1>ابدأ تتعلم البرمجة بطريقة عملية مع <span style="color:var(--accent)">DevCore</span></h1>
         <p class="lead">كورسات قصيرة، مشاريع تطبيقية، وتمارين عملية تقدر تنفّذها حتى لو بتشتغل من موبايل باستخدام Termux. مناسب للمبتدئين واللي عايزين يدخلوا مجال السيبر وسيستمز.</p>
@@ -186,12 +191,92 @@
 
     <section id="contact">
       <h2 style="margin-top:20px">تواصل معانا</h2>
-      <form onsubmit="submitContact(event)" style="display:flex;flex-direction:column;gap:8px;max-width:520px">
+      <form id="contact-form" style="display:flex;flex-direction:column;gap:8px;max-width:520px">
         <input id="name" placeholder="اسمك" required style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6">
         <input id="email" placeholder="ايميلك" type="email" required style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6">
         <textarea id="msg" placeholder="اكتب رسالتك" rows="4" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6"></textarea>
-        <div><button class="btn btn-primary">ابعث رسالة</button></div>
+        <div><button class="btn btn-primary" id="send-contact">ابعث رسالة</button></div>
       </form>
+    </section>
+
+    <!-- Admin Panel (hidden by default) -->
+    <section id="admin-panel" class="hidden">
+      <div class="admin-panel">
+        <div class="panel-row">
+          <div>
+            <div style="font-weight:800">لوحة التحكم — Admin</div>
+            <div class="small">email: <span id="admin-email">devcore.communicate@gmail.com</span> | pay_id: <span id="admin-pay">dev_core_26.11.2025</span> | SN: <span id="admin-sn">10002</span></div>
+          </div>
+          <div class="controls">
+            <button class="btn btn-ghost" onclick="logoutAdmin()">خروج</button>
+            <button class="btn btn-ghost" onclick="exportData()">تصدير بيانات (JSON)</button>
+            <button class="btn btn-ghost" onclick="importDataPrompt()">استيراد بيانات</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="tabs" id="admin-tabs">
+          <div class="tab active" data-tab="overview" onclick="switchTab(event)">Overview</div>
+          <div class="tab" data-tab="purchases" onclick="switchTab(event)">Purchases</div>
+          <div class="tab" data-tab="contacts" onclick="switchTab(event)">Contacts</div>
+          <div class="tab" data-tab="courses" onclick="switchTab(event)">Courses</div>
+          <div class="tab" data-tab="users" onclick="switchTab(event)">Users</div>
+        </div>
+
+        <div id="tab-content" style="margin-top:14px">
+          <!-- overview -->
+          <div id="overview" class="tab-pane">
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div class="badge">Users: <span id="count-users">0</span></div>
+              <div class="badge">Purchases: <span id="count-purchases">0</span></div>
+              <div class="badge">Messages: <span id="count-messages">0</span></div>
+              <div class="badge">Courses: <span id="count-courses">0</span></div>
+            </div>
+          </div>
+
+          <!-- purchases -->
+          <div id="purchases" class="tab-pane hidden">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="small">قائمة المشتريات المسجلة (محلياً)</div>
+              <div><button class="btn btn-primary" onclick="addDummyPurchase()">اضف عملية وهمية</button></div>
+            </div>
+            <table id="purchases-table">
+              <thead>
+                <tr><th>حالة</th><th>المبلغ</th><th>البريد</th><th>الاسم</th><th>تاريخ</th><th>الرقم</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <!-- contacts -->
+          <div id="contacts" class="tab-pane hidden">
+            <div class="small">رسائل من فورم التواصل</div>
+            <table id="contacts-table">
+              <thead><tr><th>الرسالة</th><th>البريد</th><th>الاسم</th><th>التاريخ</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <!-- courses -->
+          <div id="courses" class="tab-pane hidden">
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="course-title" placeholder="عنوان الكورس" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6">
+              <input id="course-desc" placeholder="وصف قصير" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6">
+              <button class="btn btn-primary" onclick="addCourse()">اضف كورس</button>
+            </div>
+            <table id="courses-table">
+              <thead><tr><th>العمليات</th><th>الوصف</th><th>العنوان</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <!-- users -->
+          <div id="users" class="tab-pane hidden">
+            <div class="small">قائمة المستخدمين (محلياً)</div>
+            <table id="users-table"><thead><tr><th>الايميل</th><th>الاسم</th><th>مجموع الشراء</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     <footer>
@@ -201,15 +286,217 @@
   </div>
 
   <script>
-    function scrollToSection(id){
-      document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+    // ---- Config (admin credentials & serial) ----
+    const ADMIN_EMAIL = 'devcore.communicate@gmail.com';
+    const ADMIN_PASSWORD = 'dev_core_26.11.2025'; // as requested (used as login password)
+    const SERIAL_NUMBER = '10002';
+
+    // Utils: storage keys
+    const LS_KEYS = {
+      users: 'dc_users_v1',
+      contacts: 'dc_contacts_v1',
+      purchases: 'dc_purchases_v1',
+      courses: 'dc_courses_v1'
+    };
+
+    // initialize sample data if not present
+    function ensureInit(){
+      if(!localStorage.getItem(LS_KEYS.users)){
+        const u = [{name:'Demo User',email:'demo@devcore.local',purchases:0}];
+        localStorage.setItem(LS_KEYS.users,JSON.stringify(u));
+      }
+      if(!localStorage.getItem(LS_KEYS.courses)){
+        const c = [{title:'Python — للمبتدئين',desc:'10 دروس + 3 مشاريع'},{title:'Web Dev — Intro',desc:'HTML, CSS, JS'}];
+        localStorage.setItem(LS_KEYS.courses,JSON.stringify(c));
+      }
+      if(!localStorage.getItem(LS_KEYS.purchases)){
+        localStorage.setItem(LS_KEYS.purchases,JSON.stringify([]));
+      }
+      if(!localStorage.getItem(LS_KEYS.contacts)){
+        localStorage.setItem(LS_KEYS.contacts,JSON.stringify([]));
+      }
     }
-    function submitContact(e){
+    ensureInit();
+
+    // Public: contact form -> save to localStorage
+    document.getElementById('contact-form').addEventListener('submit', function(e){
       e.preventDefault();
-      const name=document.getElementById('name').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const msg = document.getElementById('msg').value.trim();
+      if(!name||!email||!msg){ alert('من فضلك املأ الحقول'); return; }
+      const contacts = JSON.parse(localStorage.getItem(LS_KEYS.contacts)||'[]');
+      const item = {name,email,msg,date:new Date().toISOString()};
+      contacts.unshift(item);
+      localStorage.setItem(LS_KEYS.contacts,JSON.stringify(contacts));
       alert('شكراً '+name+'! هنتواصل معاك قريباً.');
       e.target.reset();
+      refreshAdminCounts();
+    });
+
+    // Admin auth (simple, client-side). Prompts for credentials.
+    function openAdmin(e){
+      if(e) e.preventDefault();
+      // check session
+      if(sessionStorage.getItem('dc_admin_auth')==='1'){
+        showAdminPanel();
+        return;
+      }
+      const email = prompt('ادخل ايميل الادمن:').trim();
+      const pass = prompt('ادخل كلمة المرور (pay_id):').trim();
+      if(email===ADMIN_EMAIL && pass===ADMIN_PASSWORD){
+        sessionStorage.setItem('dc_admin_auth','1');
+        showAdminPanel();
+      } else {
+        alert('بيانات دخول خاطئة');
+      }
     }
+    function logoutAdmin(){ sessionStorage.removeItem('dc_admin_auth'); hideAdminPanel(); alert('تم تسجيل الخروج'); }
+
+    function showAdminPanel(){
+      document.getElementById('admin-panel').classList.remove('hidden');
+      document.getElementById('public-area').classList.add('hidden');
+      scrollToSection('admin-panel');
+      renderAllAdmin();
+    }
+    function hideAdminPanel(){
+      document.getElementById('admin-panel').classList.add('hidden');
+      document.getElementById('public-area').classList.remove('hidden');
+      scrollToSection('courses');
+    }
+
+    // Tabs
+    function switchTab(e){
+      const tabEls = document.querySelectorAll('.tab');
+      tabEls.forEach(t=>t.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      const tab = e.currentTarget.getAttribute('data-tab');
+      document.querySelectorAll('.tab-pane').forEach(p=>p.classList.add('hidden'));
+      document.getElementById(tab).classList.remove('hidden');
+    }
+
+    // Admin: render counters & tables
+    function refreshAdminCounts(){
+      const users = JSON.parse(localStorage.getItem(LS_KEYS.users)||'[]');
+      const purchases = JSON.parse(localStorage.getItem(LS_KEYS.purchases)||'[]');
+      const contacts = JSON.parse(localStorage.getItem(LS_KEYS.contacts)||'[]');
+      const courses = JSON.parse(localStorage.getItem(LS_KEYS.courses)||'[]');
+      document.getElementById('count-users').innerText = users.length;
+      document.getElementById('count-purchases').innerText = purchases.length;
+      document.getElementById('count-messages').innerText = contacts.length;
+      document.getElementById('count-courses').innerText = courses.length;
+    }
+
+    function renderPurchases(){
+      const tbody = document.querySelector('#purchases-table tbody'); tbody.innerHTML='';
+      const purchases = JSON.parse(localStorage.getItem(LS_KEYS.purchases)||'[]');
+      purchases.forEach(p=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${p.status||'done'}</td><td>${p.amount||0}</td><td>${p.email}</td><td>${p.name}</td><td>${new Date(p.date).toLocaleString()}</td><td>${p.id||''}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderContacts(){
+      const tbody = document.querySelector('#contacts-table tbody'); tbody.innerHTML='';
+      const items = JSON.parse(localStorage.getItem(LS_KEYS.contacts)||'[]');
+      items.forEach(i=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(i.msg)}</td><td>${i.email}</td><td>${i.name}</td><td>${new Date(i.date).toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      })
+    }
+
+    function renderCourses(){
+      const tbody = document.querySelector('#courses-table tbody'); tbody.innerHTML='';
+      const items = JSON.parse(localStorage.getItem(LS_KEYS.courses)||'[]');
+      items.forEach((c,idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><button class='btn btn-ghost' onclick='deleteCourse(${idx})'>حذف</button></td><td>${escapeHtml(c.desc)}</td><td>${escapeHtml(c.title)}</td>`;
+        tbody.appendChild(tr);
+      })
+    }
+
+    function renderUsers(){
+      const tbody = document.querySelector('#users-table tbody'); tbody.innerHTML='';
+      const items = JSON.parse(localStorage.getItem(LS_KEYS.users)||'[]');
+      items.forEach(u=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${u.email}</td><td>${u.name}</td><td>${u.purchases||0}</td>`;
+        tbody.appendChild(tr);
+      })
+    }
+
+    function renderAllAdmin(){
+      refreshAdminCounts(); renderPurchases(); renderContacts(); renderCourses(); renderUsers();
+      document.getElementById('admin-email').innerText = ADMIN_EMAIL;
+      document.getElementById('admin-pay').innerText = ADMIN_PASSWORD;
+      document.getElementById('admin-sn').innerText = SERIAL_NUMBER;
+    }
+
+    // Courses management
+    function addCourse(){
+      const title = document.getElementById('course-title').value.trim();
+      const desc = document.getElementById('course-desc').value.trim();
+      if(!title) { alert('اكتب عنوان الكورس'); return; }
+      const arr = JSON.parse(localStorage.getItem(LS_KEYS.courses)||'[]');
+      arr.unshift({title,desc});
+      localStorage.setItem(LS_KEYS.courses,JSON.stringify(arr));
+      document.getElementById('course-title').value=''; document.getElementById('course-desc').value='';
+      renderCourses(); refreshAdminCounts();
+    }
+    function deleteCourse(idx){
+      const arr = JSON.parse(localStorage.getItem(LS_KEYS.courses)||'[]');
+      arr.splice(idx,1);
+      localStorage.setItem(LS_KEYS.courses,JSON.stringify(arr));
+      renderCourses(); refreshAdminCounts();
+    }
+
+    // Purchases (simulate)
+    function addDummyPurchase(){
+      const purchases = JSON.parse(localStorage.getItem(LS_KEYS.purchases)||'[]');
+      const id = 'pay_'+Date.now();
+      purchases.unshift({id,name:'Demo Buyer',email:'buyer@demo.local',amount:9.99,status:'done',date:new Date().toISOString()});
+      localStorage.setItem(LS_KEYS.purchases,JSON.stringify(purchases));
+      renderPurchases(); refreshAdminCounts();
+    }
+
+    // Export / Import
+    function exportData(){
+      const data = {
+        users: JSON.parse(localStorage.getItem(LS_KEYS.users)||'[]'),
+        contacts: JSON.parse(localStorage.getItem(LS_KEYS.contacts)||'[]'),
+        purchases: JSON.parse(localStorage.getItem(LS_KEYS.purchases)||'[]'),
+        courses: JSON.parse(localStorage.getItem(LS_KEYS.courses)||'[]')
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='devcore-data.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+    function importDataPrompt(){
+      const txt = prompt('ألصق JSON هنا لاستيراد (سيستبدل البيانات المحلية)');
+      if(!txt) return;
+      try{
+        const obj = JSON.parse(txt);
+        if(obj.users) localStorage.setItem(LS_KEYS.users,JSON.stringify(obj.users));
+        if(obj.contacts) localStorage.setItem(LS_KEYS.contacts,JSON.stringify(obj.contacts));
+        if(obj.purchases) localStorage.setItem(LS_KEYS.purchases,JSON.stringify(obj.purchases));
+        if(obj.courses) localStorage.setItem(LS_KEYS.courses,JSON.stringify(obj.courses));
+        alert('تم الاستيراد'); renderAllAdmin();
+      }catch(err){ alert('JSON غير صحيح'); }
+    }
+
+    // Helpers
+    function escapeHtml(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // basic show/hide
+    function scrollToSection(id){ const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+    // initial render
+    document.addEventListener('DOMContentLoaded', ()=>{
+      renderAllAdmin();
+    });
+
   </script>
 </body>
 </html>
