@@ -923,7 +923,7 @@
         function openMobileMenu() {
             slideMenu.classList.add('active');
             menuOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'auto';
         }
 
         function closeMobileMenu() {
@@ -941,30 +941,22 @@
             if (e.key === 'Escape') closeMobileMenu();
         });
 
-        // ===== SETTINGS NAVIGATION =====
-        settingsMenuLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Update active link
-                settingsMenuLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                // Show selected section
-                const sectionId = link.getAttribute('data-section');
-                settingsSections.forEach(section => {
-                    section.classList.remove('active');
-                    if (section.id === sectionId) {
-                        section.classList.add('active');
-                    }
-                });
-                
-                // Close mobile menu if open
-                if (window.innerWidth <= 768) {
-                    closeMobileMenu();
-                }
-            });
-        });
+document.querySelectorAll('.settings-menu a').forEach(link => {
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    const targetId = this.getAttribute('href');
+    const targetSection = document.querySelector(targetId);
+
+    targetSection.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+
+    document.querySelectorAll('.settings-menu a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
 
         // ===== PROFILE IMAGE UPLOAD =====
         function handleImageUpload(event) {
