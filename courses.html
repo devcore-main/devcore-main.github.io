@@ -7,105 +7,7 @@
     <link rel="stylesheet" href="/dev-core/forntemd/css/style.css">
     <script src="courses.js"></script>
     <title>Courses - DEV-CORE</title>
-</head>
-
-<body>
-    <header id="header">
-        <div class="header-content">
-            <h1>Our Courses</h1>
-            <p>Explore our comprehensive range of programming and technology courses</p>
-        </div>
-
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="courses.html" class="active">Courses</a></li>
-                <li><a href="roadmap.html">Roadmap</a></li>
-                <li id="navLogin"><a href="login.html">Login</a></li>
-                <li id="navSignup"><a href="signup.html">Sign Up</a></li>
-                <li id="navDashboard" style="display: none;"><a href="dashboard.html">Dashboard</a></li>
-                <li id="navAdmin" style="display: none;"><a href="admin_panel.html">Admin Panel</a></li>
-                <li id="navLogout" style="display: none;"><a href="#" id="logoutLink">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="courses-page-container">
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <div class="container">
-                <div class="filter-controls">
-                    <input type="text" id="searchInput" placeholder="Search courses..." class="search-input">
-                    <select id="categoryFilter" class="category-filter">
-                        <option value="">All Categories</option>
-                        <option value="Web Development">Web Development</option>
-                        <option value="Security">Security</option>
-                        <option value="Artificial Intelligence">Artificial Intelligence</option>
-                        <option value="Desktop">Desktop</option>
-                        <option value="Mobile">Mobile</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Courses Grid -->
-        <section class="courses-section">
-            <div class="container">
-                <div class="courses-header">
-                    <h2>Available Courses</h2>
-                    <p id="coursesCount">Loading courses...</p>
-                </div>
-
-                <div class="courses-grid" id="coursesGrid">
-                    <div class="loading">Loading courses...</div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- Course Modal -->
-    <div id="courseModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div id="modalBody">
-                <!-- Course details will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <footer id="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>DEV-CORE</h3>
-                <p>Empowering developers through quality education</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="inedx.html">Home</a></li>
-                    <li><a href="courses.html">Courses</a></li>
-                    <li><a href="roadmap.html">Roadmap</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <ul>
-                    <li><a target="_blank" href="mailto:devcore.communicate@gmail.com">📧 Email</a></li>
-                    <li><a target="_blank" href="tel:+966359797419">📞 Phone</a></li>
-                    <li><a target="_blank" href="https://www.instagram.com/dev.core.egy">📷 Instagram</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 DEV-CORE. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="/dev-core/forntemd/js/auth.js"></script>
-    <script src="/dev-core/forntemd/js/courses.js"></script>
-
-    <style>
+        <style>
         :root {
             /* Dark Theme (Default) */
             --primary-color: #8f44ff;
@@ -563,6 +465,105 @@
 const savedTheme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', savedTheme);
 </script> 
+</head>
+
+<body>
+    <header id="header">
+        <div class="header-content">
+            <h1>Our Courses</h1>
+            <p>Explore our comprehensive range of programming and technology courses</p>
+        </div>
+
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="courses.html" class="active">Courses</a></li>
+                <li><a href="roadmap.html">Roadmap</a></li>
+                <li id="navLogin"><a href="login.html">Login</a></li>
+                <li id="navSignup"><a href="signup.html">Sign Up</a></li>
+                <li id="navDashboard" style="display: none;"><a href="dashboard.html">Dashboard</a></li>
+                <li id="navAdmin" style="display: none;"><a href="admin_panel.html">Admin Panel</a></li>
+                <li id="navLogout" style="display: none;"><a href="#" id="logoutLink">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="courses-page-container">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="container">
+                <div class="filter-controls">
+                    <input type="text" id="searchInput" placeholder="Search courses..." class="search-input">
+                    <select id="categoryFilter" class="category-filter">
+                        <option value="">All Categories</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Security">Security</option>
+                        <option value="Artificial Intelligence">Artificial Intelligence</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Mobile">Mobile</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Grid -->
+        <section class="courses-section">
+            <div class="container">
+                <div class="courses-header">
+                    <h2>Available Courses</h2>
+                    <p id="coursesCount">Loading courses...</p>
+                </div>
+
+                <div class="courses-grid" id="coursesGrid">
+                    <div class="loading">Loading courses...</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Course Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modalBody">
+                <!-- Course details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>DEV-CORE</h3>
+                <p>Empowering developers through quality education</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="inedx.html">Home</a></li>
+                    <li><a href="courses.html">Courses</a></li>
+                    <li><a href="roadmap.html">Roadmap</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a target="_blank" href="mailto:devcore.communicate@gmail.com">📧 Email</a></li>
+                    <li><a target="_blank" href="tel:+966359797419">📞 Phone</a></li>
+                    <li><a target="_blank" href="https://www.instagram.com/dev.core.egy">📷 Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 DEV-CORE. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/dev-core/forntemd/js/auth.js"></script>
+    <script src="/dev-core/forntemd/js/courses.js"></script>
+
+
 </body>
 
 </html>
